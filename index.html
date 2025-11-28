@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metas Diárias XP Neon Azul</title>
+<style>
+:root {
+    --bg: #020612;
+    --card: #071122;
+    --card-obg: #0c1a33;
+    --accent: #00b7ff;
+    --accent2: #0080ff;
+    --text: #e6f7ff;
+    --muted: #8ebbd1;
+    --success: #00ffea;
+    --neon: 0 0 12px #00b7ff, 0 0 20px #0080ff;
+}
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at top, #0a1f43 0, #020612 70%);
+    font-family: Arial, sans-serif;
+    color: var(--text);
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+}
+.wrapper {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+}
+
+/* BOTÃO ENGRENAGEM */
+#settings-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 999;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(145deg,#008cff,#0059ff);
+    box-shadow: var(--neon);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+#settings-btn img { width: 26px; filter: invert(1); }
+
+/* CARDS */
+.card {
+    background: var(--card);
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(0, 180, 255, 0.1), 0 0 22px rgba(0, 0, 0, 0.8);
+}
+
+/* BLOCO OBRIGATÓRIAS */
+.card-obg {
+    background: var(--card-obg);
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(0, 160, 255, 0.15), 0 0 22px rgba(0, 0, 0, 0.8);
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.45rem;
+    text-shadow: var(--neon);
+    margin-top: 50px;
+}
+
+/* DONUT */
+.donut {
+    --percent: 0;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background:
+        radial-gradient(farthest-side, #020612 60%, transparent 61%),
+        conic-gradient(var(--accent) calc(var(--percent)*1%), rgba(255,255,255,0.08) 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--neon);
+    transition: background .4s ease-out;
+}
+.donut-inner {
+    text-align: center;
+    font-size: .8rem;
+    color: var(--muted);
+}
+.donut-inner strong {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--accent);
+}
+
+/* NÍVEL GERAL */
+.big-level {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: var(--accent);
+    text-shadow: var(--neon);
+    margin-left: 15px;
+    line-height: 1;
+}
+
+/* ATRIBUTOS EM DUAS COLUNAS */
+#attr-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.attr-card {
+    background: rgba(255,255,255,0.03);
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0,180,255,0.15);
+}
+
+/* DONUT ATRIBUTO */
+.donut.small {
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 0 10px rgba(0,180,255,0.3);
+}
+.donut.small .donut-inner { font-size: 0.6rem; }
+
+/* ATRIBUTO TEXTO */
+.attr-name {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--text);
+}
+.attr-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.big-level-attr {
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: var(--accent);
+    margin-left: auto;
+    text-shadow: var(--neon);
+}
+
+/* TAREFAS */
+.task {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 10px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.task-chip {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.chip-obg { 
+    color: #66d1ff; 
+    border: 1px solid rgba(0,180,255,0.6); 
+}
+.chip-norm { 
+    color: var(--accent); 
+    border: 1px solid rgba(0,180,255,0.6); 
+}
+
+.progress-bar-container {
+    background: rgba(255,255,255,0.06);
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 4px 0;
+}
+.progress-bar {
+    height: 8px;
+    width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .25s ease-out;
+}
+
+/* BOTÕES */
+button {
+    margin-top: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg,#00b7ff,#0079ff);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--neon);
+    font-size: .82rem;
+}
+button:disabled{ opacity: .3; }
+
+/* CONFIG */
+#settings-panel {
+    display: none;
+    animation: fadeIn .4s ease-out;
+}
+@keyframes fadeIn {
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+label{ display:block; margin-top:6px; font-size:.86rem; }
+input,select{
+    padding:6px; margin-top:2px; width:100%;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:#020612;
+    color:var(--text);
+}
+
+/* GERENCIAMENTO */
+.manage-list{
+    margin-top:10px;
+    border-top:1px solid rgba(255,255,255,0.12);
+    padding-top:6px;
+}
+.manage-row{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:6px; margin-top:4px; font-size:.8rem;
+}
+.manage-name{
+    flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+}
+.manage-buttons button{
+    padding:4px 8px;
+    box-shadow:none;
+    font-size:.75rem;
+}
+
+/* LINHAS DE % DOS ATRIBUTOS NAS TAREFAS */
+.attr-pct-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:4px;
+}
+.attr-pct-row span.label{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.attr-pct-row input{
+    width:70px;
+}
+
+/* XP FLOAT */
+.xp-float{
+    position:fixed; z-index:9999;
+    color:var(--success);
+    font-size:.85rem;
+    text-shadow:0 0 6px rgba(0,255,230,0.9);
+    animation:xpFloat .7s ease-out forwards;
+}
+@keyframes xpFloat{
+    0%{opacity:0; transform:translateY(0) scale(.9);}
+    20%{opacity:1; transform:translateY(-6px) scale(1.05);}
+    100%{opacity:0; transform:translateY(-26px) scale(.85);}
+}
+
+.small{ font-size:.75rem; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- BOTÃO CONFIG -->
+<div id="settings-btn"><img src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png"></div>
+
+<div class="wrapper">
+
+<h1>Metas Diárias • XP Azul</h1>
+
+<!-- STATUS GERAL -->
+<div class="card" id="card-global">
+    <h2>Status Geral</h2>
+    <div style="display:flex; gap:14px; align-items:center;">
+        <div class="donut" id="donut-global">
+            <div class="donut-inner">
+                <span>XP</span>
+                <strong id="donut-global-percent">0%</strong>
+            </div>
+        </div>
+        <div class="big-level" id="big-level">1</div>
+    </div>
+</div>
+
+<!-- ATRIBUTOS -->
+<div class="card" id="card-attr">
+    <h2>Atributos</h2>
+    <div id="attr-list"></div>
+</div>
+
+<!-- OBRIGATÓRIAS -->
+<div class="card-obg">
+    <h2>Obrigatórias</h2>
+    <div id="task-obg"></div>
+</div>
+
+<!-- NORMAIS -->
+<div class="card">
+    <h2>Normais</h2>
+    <div id="task-nor"></div>
+</div>
+
+<!-- CONFIGURAÇÕES -->
+<div id="settings-panel">
+
+    <div class="card">
+        <h2>Criar Atributo</h2>
+        <label>Nome:<input type="text" id="attr-name"></label>
+        <button id="add-attr-btn" type="button">+1 Atributo</button>
+        <div class="manage-list">
+            <div class="small">Gerenciar atributos:</div>
+            <div id="attr-manage"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Criar Tarefa</h2>
+        <label>Nome:<input type="text" id="task-name"></label>
+
+        <label>Tipo:
+            <select id="task-type">
+                <option value="normal">Normal</option>
+                <option value="obrigatoria">Obrigatória</option>
+            </select>
+        </label>
+
+        <label>Dificuldade:
+            <select id="task-difficulty">
+                <option value="2">Fácil (2 XP)</option>
+                <option value="5">Médio (5 XP)</option>
+                <option value="8">Difícil (8 XP)</option>
+                <option value="11">HARD (11 XP)</option>
+            </select>
+        </label>
+
+        <label>Cliques necessários:
+            <input type="number" id="task-clicks" value="1" min="1">
+        </label>
+
+        <label>Atributos (porcentagem do XP da tarefa para cada um):</label>
+        <div id="task-attrs" class="small"></div>
+
+        <button id="add-task-btn" type="button">+1 Tarefa</button>
+
+        <div class="manage-list">
+            <div class="small">Organizar tarefas:</div>
+            <div id="task-manage"></div>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+/* UTIL */
+function hojeStr(){
+    const d=new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function salvar(){ localStorage.setItem("metaXPData",JSON.stringify(data)); }
+function carregar(){ try{return JSON.parse(localStorage.getItem("metaXPData"));}catch(e){return null;} }
+
+/* ESTADO */
+let data=carregar();
+if(!data){
+    data={
+        lastDate:hojeStr(),
+        global:{level:1,xp:0,xpForNext:100},
+        attributes:[],
+        tasks:[]
+    };
+    salvar();
+}
+
+/* RESET DIÁRIO COM PENALIDADE APENAS OBRIGATÓRIAS (USANDO % DE CADA ATRIBUTO) */
+if(data.lastDate!==hojeStr()){
+    const obrigatorias=data.tasks.filter(t=>t.type==="obrigatoria");
+
+    obrigatorias.forEach(t=>{
+        const feitos = t.clicksDoneToday || 0;
+        const faltou = t.clicksRequired - feitos;
+        if(faltou>0 && t.baseXP>0 && t.clicksRequired>0){
+
+            const xpPorClique = t.baseXP / t.clicksRequired;
+            const lista = getTaskAttrPercents(t);
+
+            lista.forEach(ap=>{
+                const attr = data.attributes.find(a=>a.id===ap.attrId);
+                if(attr){
+                    const penalidade = faltou * xpPorClique * (ap.percent/100);
+                    attr.xp = Math.max(0, attr.xp - penalidade);
+                }
+            });
+        }
+        t.clicksDoneToday = 0;
+    });
+
+    data.lastDate=hojeStr();
+    salvar();
+}
+
+/* XP */
+function addXPGlobal(v){
+    if(v<=0) return;
+    data.global.xp+=v;
+    while(data.global.xp>=data.global.xpForNext){
+        data.global.xp-=data.global.xpForNext;
+        data.global.level++;
+        data.global.xpForNext=Math.ceil(data.global.xpForNext*1.07);
+    }
+}
+function addXPAttr(id,v){
+    if(v<=0) return;
+    const a=data.attributes.find(x=>x.id===id);
+    if(!a)return;
+    a.xp+=v;
+    while(a.xp>=a.xpForNext){
+        a.xp-=a.xpForNext;
+        a.level++;
+        a.xpForNext=Math.ceil(a.xpForNext*1.05);
+    }
+}
+
+/* RENDER GLOBAL */
+function renderGlobal(){
+    document.getElementById("big-level").textContent=data.global.level;
+    const pct=(data.global.xp/data.global.xpForNext)*100;
+    document.getElementById("donut-global").style.setProperty("--percent",pct);
+    document.getElementById("donut-global-percent").textContent=pct.toFixed(0)+"%";
+}
+
+/* ATRIBUTOS */
+let nextAttrId=data.attributes.length?Math.max(...data.attributes.map(a=>a.id))+1:1;
+
+function renderAttrList(){
+    const box=document.getElementById("attr-list");
+    box.innerHTML="";
+    if(!data.attributes.length){
+        box.innerHTML="<p class='small'>Nenhum atributo criado.</p>";
+        return;
+    }
+    data.attributes.forEach(a=>{
+        const pct=(a.xp/a.xpForNext)*100;
+        const card=document.createElement("div");
+        card.className="attr-card";
+        card.innerHTML=`
+            <div class="donut small" style="--percent:${pct}">
+                <div class="donut-inner"><strong>${pct.toFixed(0)}%</strong></div>
+            </div>
+            <div>
+                <div class="attr-name">${a.name}</div>
+                <div class="attr-meta">${a.xp.toFixed(1)} / ${a.xpForNext}</div>
+            </div>
+            <div class="big-level-attr">${a.level}</div>
+        `;
+        box.appendChild(card);
+    });
+}
+
+/* CAMPOS DE % PARA ATRIBUTOS NA CRIAÇÃO DE TAREFA */
+function renderAttrPercentInputs(){
+    const box=document.getElementById("task-attrs");
+    box.innerHTML="";
+    if(!data.attributes.length){
+        box.innerHTML="Nenhum atributo.";
+        return;
+    }
+    data.attributes.forEach(a=>{
+        const row=document.createElement("div");
+        row.className="attr-pct-row";
+        row.innerHTML=`
+            <span class="label">${a.name}</span>
+            <input type="number" id="pct-${a.id}" min="0" step="1" placeholder="0">
+            <span>%</span>
+        `;
+        box.appendChild(row);
+    });
+}
+
+/* GERENCIAR ATRIBUTOS */
+function renderAttrManage(){
+    const box=document.getElementById("attr-manage");
+    box.innerHTML="";
+    if(!data.attributes.length){
+        box.innerHTML="<div class='small'>Nenhum atributo.</div>";
+        return;
+    }
+    data.attributes.forEach(a=>{
+        const row=document.createElement("div");
+        row.className="manage-row";
+        row.innerHTML=`
+            <div class="manage-name">${a.name}</div>
+            <div class="manage-buttons">
+                <button onclick="attrMoveUp(${a.id})">↑</button>
+                <button onclick="attrMoveDown(${a.id})">↓</button>
+                <button onclick="attrDelete(${a.id})">✖</button>
+            </div>`;
+        box.appendChild(row);
+    });
+}
+
+function attrMoveUp(id){
+    const i=data.attributes.findIndex(a=>a.id===id);
+    if(i>0){
+        [data.attributes[i],data.attributes[i-1]]=[data.attributes[i-1],data.attributes[i]];
+        salvar(); renderAll();
+    }
+}
+function attrMoveDown(id){
+    const i=data.attributes.findIndex(a=>a.id===id);
+    if(i<data.attributes.length-1){
+        [data.attributes[i],data.attributes[i+1]]=[data.attributes[i+1],data.attributes[i]];
+        salvar(); renderAll();
+    }
+}
+function attrDelete(id){
+    data.attributes=data.attributes.filter(a=>a.id!==id);
+    // Remove esse atributo das tarefas (em attrPcts)
+    data.tasks.forEach(t=>{
+        if(t.attrPcts) t.attrPcts = t.attrPcts.filter(ap=>ap.attrId!==id);
+    });
+    salvar(); renderAll();
+}
+
+/* BOTÃO CRIAR ATRIBUTO */
+document.getElementById("add-attr-btn").onclick=function(){
+    const input=document.getElementById("attr-name");
+    const name=input.value.trim();
+    if(!name)return;
+    data.attributes.push({
+        id:nextAttrId++,
+        name,
+        level:1,
+        xp:0,
+        xpForNext:50
+    });
+    input.value="";
+    salvar();
+    renderAll();
+};
+
+/* AUX: PEGAR LISTA DE {attrId, percent} DE UMA TAREFA (COM BACKUP PARA VERSÃO ANTIGA) */
+function getTaskAttrPercents(t){
+    if(Array.isArray(t.attrPcts)) return t.attrPcts;
+    if(Array.isArray(t.attrIds)){
+        // compatibilidade antiga: se existirem attrIds, assume 100% pra cada
+        return t.attrIds.map(id=>({attrId:id, percent:100}));
+    }
+    return [];
+}
+
+/* TAREFAS */
+let nextTaskId=data.tasks.length?Math.max(...data.tasks.map(t=>t.id))+1:1;
+
+function renderTasks(){
+    const obgBox=document.getElementById("task-obg");
+    const norBox=document.getElementById("task-nor");
+    obgBox.innerHTML=""; 
+    norBox.innerHTML="";
+
+    const obg=data.tasks.filter(t=>t.type==="obrigatoria");
+    const nor=data.tasks.filter(t=>t.type==="normal");
+
+    obg.forEach(t=>obgBox.appendChild(renderTask(t)));
+    nor.forEach(t=>norBox.appendChild(renderTask(t)));
+
+    if(!obg.length) obgBox.innerHTML="<p class='small'>Nenhuma tarefa obrigatória.</p>";
+    if(!nor.length) norBox.innerHTML="<p class='small'>Nenhuma tarefa normal.</p>";
+}
+
+function renderTask(t){
+    const div=document.createElement("div");
+    div.className="task";
+
+    const feitos = t.clicksDoneToday || 0;
+    const pct=(feitos/t.clicksRequired)*100;
+
+    const lista = getTaskAttrPercents(t);
+    const attrsStr = lista.map(ap=>{
+        const a = data.attributes.find(x=>x.id===ap.attrId);
+        if(!a) return null;
+        return `${a.name} (${ap.percent}%)`;
+    }).filter(x=>x).join(", ");
+
+    div.innerHTML=`
+        <div class="task-header">
+            <div>${t.name}</div>
+            <div class="task-chip ${t.type==="obrigatoria"?"chip-obg":"chip-norm"}">
+                ${t.type==="obrigatoria"?"Obrigatória":"Normal"}
+            </div>
+        </div>
+        <div class="small">${t.baseXP} XP • ${attrsStr || "Nenhum"}<br>
+        ${feitos}/${t.clicksRequired}</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width:${pct}%"></div>
+        </div>
+    `;
+
+    const btn=document.createElement("button");
+    btn.textContent="+1";
+    if(feitos>=t.clicksRequired) btn.disabled=true;
+
+    btn.onclick=function(e){
+        if(t.clicksDoneToday>=t.clicksRequired)return;
+        t.clicksDoneToday = (t.clicksDoneToday || 0) + 1;
+
+        const fracBase = t.baseXP / t.clicksRequired;
+
+        const lista = getTaskAttrPercents(t);
+        lista.forEach(ap=>{
+            const ganhoAttr = fracBase * (ap.percent/100);
+            addXPAttr(ap.attrId, ganhoAttr);
+        });
+
+        if(t.type==="normal"){
+            addXPGlobal(fracBase);
+        }
+
+        salvar(); renderAll();
+        spawnXPFloat(e.clientX,e.clientY,fracBase);
+    };
+
+    div.appendChild(btn);
+    return div;
+}
+
+/* GERENCIAR TAREFAS */
+function renderTaskManage(){
+    const box=document.getElementById("task-manage");
+    box.innerHTML="";
+
+    const obg=data.tasks.filter(t=>t.type==="obrigatoria");
+    const nor=data.tasks.filter(t=>t.type==="normal");
+
+    const h1=document.createElement("div");
+    h1.className="small";
+    h1.style.marginTop="6px";
+    h1.textContent="Obrigatórias:";
+    box.appendChild(h1);
+
+    if(!obg.length){
+        const p=document.createElement("div");
+        p.className="small";
+        p.textContent="Nenhuma tarefa obrigatória.";
+        box.appendChild(p);
+    } else {
+        obg.forEach(t=>{
+            const row=document.createElement("div");
+            row.className="manage-row";
+            row.innerHTML=`
+                <div class="manage-name">${t.name}</div>
+                <div class="manage-buttons">
+                    <button onclick="taskMoveUp(${t.id})">↑</button>
+                    <button onclick="taskMoveDown(${t.id})">↓</button>
+                    <button onclick="taskDelete(${t.id})">✖</button>
+                </div>`;
+            box.appendChild(row);
+        });
+    }
+
+    const h2=document.createElement("div");
+    h2.className="small";
+    h2.style.marginTop="12px";
+    h2.textContent="Normais:";
+    box.appendChild(h2);
+
+    if(!nor.length){
+        const p2=document.createElement("div");
+        p2.className="small";
+        p2.textContent="Nenhuma tarefa normal.";
+        box.appendChild(p2);
+    } else {
+        nor.forEach(t=>{
+            const row=document.createElement("div");
+            row.className="manage-row";
+            row.innerHTML=`
+                <div class="manage-name">${t.name}</div>
+                <div class="manage-buttons">
+                    <button onclick="taskMoveUp(${t.id})">↑</button>
+                    <button onclick="taskMoveDown(${t.id})">↓</button>
+                    <button onclick="taskDelete(${t.id})">✖</button>
+                </div>`;
+            box.appendChild(row);
+        });
+    }
+}
+
+function taskMoveUp(id){
+    const idx=data.tasks.findIndex(t=>t.id===id);
+    if(idx>0){
+        [data.tasks[idx],data.tasks[idx-1]]=[data.tasks[idx-1],data.tasks[idx]];
+        salvar(); renderAll();
+    }
+}
+function taskMoveDown(id){
+    const idx=data.tasks.findIndex(t=>t.id===id);
+    if(idx<data.tasks.length-1){
+        [data.tasks[idx],data.tasks[idx+1]]=[data.tasks[idx+1],data.tasks[idx]];
+        salvar(); renderAll();
+    }
+}
+function taskDelete(id){
+    data.tasks=data.tasks.filter(t=>t.id!==id);
+    salvar(); renderAll();
+}
+
+/* CRIAR TAREFA */
+document.getElementById("add-task-btn").onclick=function(){
+    const name=document.getElementById("task-name").value.trim();
+    if(!name)return;
+    const type=document.getElementById("task-type").value;
+    const baseXP=Number(document.getElementById("task-difficulty").value);
+    const clicks=Math.max(1,Number(document.getElementById("task-clicks").value)||1);
+
+    const attrPcts=[];
+    data.attributes.forEach(a=>{
+        const inp=document.getElementById("pct-"+a.id);
+        if(!inp)return;
+        const val=Number(inp.value);
+        if(!isNaN(val) && val>0){
+            attrPcts.push({attrId:a.id, percent:val});
+        }
+    });
+
+    data.tasks.push({
+        id:nextTaskId++,
+        name,
+        type,
+        baseXP,
+        clicksRequired:clicks,
+        clicksDoneToday:0,
+        attrPcts
+    });
+
+    document.getElementById("task-name").value="";
+    document.getElementById("task-clicks").value=1;
+    data.attributes.forEach(a=>{
+        const inp=document.getElementById("pct-"+a.id);
+        if(inp) inp.value="";
+    });
+
+    salvar(); renderAll();
+};
+
+/* XP FLOAT */
+function spawnXPFloat(x,y,v){
+    const d=document.createElement("div");
+    d.className="xp-float";
+    d.textContent=`+${v.toFixed(2)} XP`;
+    d.style.left=x+"px";
+    d.style.top=y+"px";
+    document.body.appendChild(d);
+    d.addEventListener("animationend",()=>d.remove());
+}
+
+/* TOGGLE CONFIG */
+let open=false;
+document.getElementById("settings-btn").onclick=function(){
+    open=!open;
+    document.getElementById("settings-panel").style.display=open?"block":"none";
+};
+
+/* RENDER ALL */
+function renderAll(){
+    renderGlobal();
+    renderAttrList();
+    renderAttrPercentInputs();
+    renderAttrManage();
+    renderTasks();
+    renderTaskManage();
+}
+
+/* INICIAL */
+renderAll();
+</script>
+</body>
+</html>
